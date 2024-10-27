@@ -11,6 +11,7 @@ model admin {
     role          admin_role_enum           @default(ADMIN)
     active_status active_status_enum        @default(ACTIVE)
     refresh_token admins_on_refresh_tokens?
+    businesses    business[]
 
     @@schema("common")
 }
