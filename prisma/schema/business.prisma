@@ -12,18 +12,19 @@ model business {
 }
 
 model business_category {
-    id          Int                         @id() @default(autoincrement())
-    created_at  DateTime                    @default(now())
-    updated_at  DateTime                    @default(now()) @updatedAt
-    title       String                      @unique
-    description String?
-    business    business[]
-    options     business_category_options[]
+    id               Int                                  @id() @default(autoincrement())
+    created_at       DateTime                             @default(now())
+    updated_at       DateTime                             @default(now()) @updatedAt
+    title            String
+    slug             String                               @unique
+    description      String?
+    business         business[]
+    options_template business_category_options_template[]
 
     @@schema("common")
 }
 
-model business_category_options {
+model business_category_options_template {
     id                   Int               @id() @default(autoincrement())
     created_at           DateTime          @default(now())
     updated_at           DateTime          @default(now()) @updatedAt
@@ -39,6 +40,7 @@ model business_options {
     created_at  DateTime @default(now())
     updated_at  DateTime @default(now()) @updatedAt
     title       String
+    value       String
     business_id Int
     business    business @relation(fields: [business_id], references: [id])
 
