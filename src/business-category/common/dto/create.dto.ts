@@ -8,10 +8,8 @@ import {
     IsOptional,
     IsString,
     Length,
-    Matches,
     ValidateNested,
 } from 'class-validator';
-import { SLUGIFY_REGEX } from '../../../common/regex/slugify.regex';
 
 export class CreateBusinessCategoryOptionsTemplateDto {
     @Length(2, 20)
@@ -26,12 +24,6 @@ export class CreateBusinessCategoryDto {
     @IsNotEmpty()
     title: string;
 
-    @Matches(SLUGIFY_REGEX)
-    @Length(2, 20)
-    @IsString()
-    @IsOptional()
-    slug?: string;
-
     @Length(10, 1000)
     @IsString()
     @IsOptional()
@@ -43,5 +35,6 @@ export class CreateBusinessCategoryDto {
     @ArrayMinSize(2)
     @ArrayNotEmpty()
     @IsArray()
+    @IsNotEmpty()
     options: CreateBusinessCategoryOptionsTemplateDto[];
 }

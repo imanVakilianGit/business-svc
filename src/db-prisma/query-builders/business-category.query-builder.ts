@@ -12,7 +12,7 @@ export class BusinessCategoryQueryBuilder {
         };
     }
 
-    create(data: CreateBusinessCategoryDto): Prisma.business_categoryCreateArgs<DefaultArgs> {
+    create(data: CreateBusinessCategoryDto & { slug: string }): Prisma.business_categoryCreateArgs<DefaultArgs> {
         const options: { title: string }[] = [];
         data.options.forEach((option) => options.push(option));
         return {
