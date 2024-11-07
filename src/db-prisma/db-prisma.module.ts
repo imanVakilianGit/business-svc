@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 
 import { DbPrismaService } from './db-prisma.service';
-import { BusinessCategoryQueryBuilder } from './query-builders/business-category.query_builder';
+import { BusinessCategoryQueryBuilder } from './query-builders/business-category.query-builder';
 import { BusinessCategoryRepository } from './repositories/business-category.repository';
 
 @Module({

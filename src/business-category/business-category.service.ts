@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { business_category } from '@prisma/client';
 
 import { businessCategoryListWithOptionsTemplateRelationType } from './common/types/entity/business-category-entity.type';
-import { BusinessCategoryQueryBuilder } from '../db-prisma/query-builders/business-category.query_builder';
+import { BusinessCategoryQueryBuilder } from '../db-prisma/query-builders/business-category.query-builder';
 import { BusinessCategoryRepository } from '../db-prisma/repositories/business-category.repository';
 import { CreateBusinessCategoryDto } from './common/dto/create.dto';
 import { CreateBusinessCategoryResponseType } from './common/types/response-type/create-response.type';
@@ -29,11 +29,11 @@ export class BusinessCategoryService {
         private readonly businessCategoryRepository: BusinessCategoryRepository,
     ) {}
 
-    async create(dto: CreateBusinessCategoryDto): Promise<CreateBusinessCategoryResponseType> {
+    async create(
+        dto: CreateBusinessCategoryDto | (CreateBusinessCategoryDto & { slug: string }),
+    ): Promise<CreateBusinessCategoryResponseType> {
         try {
-            dto.slug = dto.slug ? slugifyStrings(dto.slug) : slugifyStrings(dto.title);
-
-            await this._checkExistBySlug(dto.slug);
+            dto = { ...dto, slug: slugifyStrings(dto.title) };
 
             const databaseResult: businessCategoryListWithOptionsTemplateRelationType =
                 await this.businessCategoryRepository.create<businessCategoryListWithOptionsTemplateRelationType>(
@@ -43,6 +43,10 @@ export class BusinessCategoryService {
             SUCCESS_CREATE_BUSINESS_CATEGORY.data = databaseResult;
             return <CreateBusinessCategoryResponseType>SUCCESS_CREATE_BUSINESS_CATEGORY;
         } catch (error) {
+            if (error.code === 'P2002' && error.meta.target) {
+                FAILED_BUSINESS_CATEGORY_ALREADY_EXIST.field = error.meta.target;
+                throw new ConflictException(FAILED_BUSINESS_CATEGORY_ALREADY_EXIST);
+            }
             throw error;
         }
     }
@@ -105,13 +109,6 @@ export class BusinessCategoryService {
     }
 
     // =====================================================================================
-    private async _checkExistBySlug(slug: string): Promise<void> {
-        const databaseResult: business_category = await this.businessCategoryRepository.findUnique<business_category>(
-            this.businessCategoryQueryBuilder.findOneBySlug(slug),
-        );
-        if (databaseResult) throw new ConflictException(FAILED_BUSINESS_CATEGORY_ALREADY_EXIST);
-    }
-
     private async _findOneBySlug(slug: string): Promise<businessCategoryListWithOptionsTemplateRelationType> {
         const databaseResult: businessCategoryListWithOptionsTemplateRelationType =
             await this.businessCategoryRepository.findUnique<businessCategoryListWithOptionsTemplateRelationType>(
