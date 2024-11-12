@@ -48,9 +48,7 @@ export class BusinessCategoryQueryBuilder {
         };
     }
 
-    findAllWithDetail(
-        data: Omit<findAllBusinessCategoryDto, 'page'> & { skip: number },
-    ): Prisma.business_categoryFindManyArgs<DefaultArgs> {
+    findAll(data: Omit<findAllBusinessCategoryDto, 'page'> & { skip: number }): Prisma.business_categoryFindManyArgs<DefaultArgs> {
         return {
             where: {
                 ...(data.title ? { title: { contains: data.title } } : {}),
@@ -59,6 +57,14 @@ export class BusinessCategoryQueryBuilder {
             take: data.limit,
             orderBy: {
                 [data.sortBy]: data.orderBy,
+            },
+            select: {
+                id: true,
+                title: true,
+                slug: true,
+                description: true,
+                created_at: true,
+                updated_at: true,
             },
         };
     }
