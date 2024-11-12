@@ -1,12 +1,15 @@
 model business {
-    id                   Int                @id() @default(autoincrement())
-    created_at           DateTime           @default(now())
-    updated_at           DateTime           @default(now()) @updatedAt
-    owner_id             Int                @unique
-    business_category_id Int                @unique
-    owner                admin              @relation(fields: [owner_id], references: [id])
-    business_category    business_category  @relation(fields: [business_category_id], references: [id])
-    extera_options       business_options[]
+    id                   Int                      @id() @default(autoincrement())
+    created_at           DateTime                 @default(now())
+    updated_at           DateTime                 @default(now()) @updatedAt
+    owner_id             Int
+    name                 String                   @unique
+    slug                 String                   @unique
+    business_category_id Int
+    owner                admin                    @relation(fields: [owner_id], references: [id])
+    business_category    business_category        @relation(fields: [business_category_id], references: [id])
+    options              business_options[]
+    extra_options        business_extra_options[]
 
     @@schema("common")
 }
@@ -15,7 +18,7 @@ model business_category {
     id               Int                                  @id() @default(autoincrement())
     created_at       DateTime                             @default(now())
     updated_at       DateTime                             @default(now()) @updatedAt
-    title            String
+    title            String                               @unique
     slug             String                               @unique
     description      String?
     business         business[]
@@ -36,6 +39,18 @@ model business_category_options_template {
 }
 
 model business_options {
+    id          Int      @id() @default(autoincrement())
+    created_at  DateTime @default(now())
+    updated_at  DateTime @default(now()) @updatedAt
+    title       String
+    value       String
+    business_id Int
+    business    business @relation(fields: [business_id], references: [id])
+
+    @@schema("common")
+}
+
+model business_extra_options {
     id          Int      @id() @default(autoincrement())
     created_at  DateTime @default(now())
     updated_at  DateTime @default(now()) @updatedAt

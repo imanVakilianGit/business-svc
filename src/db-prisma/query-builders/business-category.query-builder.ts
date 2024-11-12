@@ -62,4 +62,15 @@ export class BusinessCategoryQueryBuilder {
             },
         };
     }
+
+    findOneByIdWithDetail(id: number): Prisma.business_categoryFindUniqueArgs<DefaultArgs> {
+        return {
+            where: {
+                id,
+            },
+            include: {
+                options_template: true,
+            },
+        };
+    }
 }

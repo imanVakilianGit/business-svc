@@ -3,5 +3,5 @@ import { BaseFailedResponseInterface } from '../../../common/interface/base-fail
 export const FAILED_BUSINESS_CATEGORY_ALREADY_EXIST: BaseFailedResponseInterface = {
     message: 'business type already exist',
     code: 'FAILED_BUSINESS_CATEGORY_ALREADY_EXIST',
-    field: 'slug',
+    field: '',
 };

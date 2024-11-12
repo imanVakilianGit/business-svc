@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { BusinessService } from './business.service';
 import { CreateBusinessDto } from './common/dto/create.dto';
+import { CreateBusinessResponseType } from './common/types/response-type/create-response.type';
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
@@ -13,7 +14,7 @@ export class BusinessController {
     constructor(private readonly businessService: BusinessService) {}
 
     @MessagePattern('create_business')
-    create(@Payload() dto: CreateBusinessDto) {
+    create(@Payload() dto: CreateBusinessDto): Promise<CreateBusinessResponseType> {
         return this.businessService.create(dto);
     }
 
