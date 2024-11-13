@@ -13,8 +13,12 @@ import { FAILED_BUSINESS_ALREADY_EXIST, FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND }
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
+import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
+import { omitObject } from '../common/function/omit-object';
+import { paginationResult } from '../common/function/patination-result.func';
 import { slugifyStrings } from '../common/function/slugify.func';
 import { SUCCESS_CREATE_BUSINESS } from './responses/success/success-create.result';
+import { SUCCESS_FIND_ALL_BUSINESS } from './responses/success/success-find-all.result';
 import { UpdateBusinessDto } from './common/dto/update.dto';
 
 @Injectable()
@@ -54,8 +58,45 @@ export class BusinessService {
         }
     }
 
-    findAll(dto: FindAllBusinessDto) {
-        return `This action returns all business` + dto;
+    async findAll(dto: FindAllBusinessDto | (FindAllBusinessDto & { skip: number })): Promise<FindAllBusinessResponseType> {
+        try {
+            dto = { ...dto, skip: (dto.page - 1) * dto.limit };
+
+            const totalCount: number | undefined = await this.businessRepository.count(this.businessQueryBuilder.count(dto.name));
+
+            if (!totalCount) {
+                SUCCESS_FIND_ALL_BUSINESS.data = paginationResult({
+                    totalCount: 0,
+                    limit: dto.limit,
+                    page: 0,
+                    count: 0,
+                    resultFieldName: 'businesses',
+                    ResultValue: [],
+                    sortBy: dto.sortBy,
+                    orderBy: dto.orderBy,
+                });
+                return <FindAllBusinessResponseType>SUCCESS_FIND_ALL_BUSINESS;
+            }
+
+            const result: business[] = await this.businessRepository.findAll<business>(
+                this.businessQueryBuilder.findAll(omitObject(dto, 'page')),
+            );
+
+            SUCCESS_FIND_ALL_BUSINESS.data = paginationResult({
+                totalCount,
+                limit: dto.limit,
+                page: dto.page,
+                count: result.length,
+                resultFieldName: 'businesses',
+                ResultValue: result,
+                sortBy: dto.sortBy,
+                orderBy: dto.orderBy,
+            });
+
+            return <FindAllBusinessResponseType>SUCCESS_FIND_ALL_BUSINESS;
+        } catch (error) {
+            throw error;
+        }
     }
 
     findOne(dto: FindOneBusinessDto) {

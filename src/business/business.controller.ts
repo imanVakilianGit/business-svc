@@ -7,6 +7,7 @@ import { CreateBusinessResponseType } from './common/types/response-type/create-
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
+import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
 import { UpdateBusinessDto } from './common/dto/update.dto';
 
 @Controller()
@@ -19,7 +20,7 @@ export class BusinessController {
     }
 
     @MessagePattern('find_all_business')
-    findAll(@Payload() dto: FindAllBusinessDto) {
+    findAll(@Payload() dto: FindAllBusinessDto): Promise<FindAllBusinessResponseType> {
         return this.businessService.findAll(dto);
     }
 

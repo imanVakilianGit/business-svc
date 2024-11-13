@@ -7,7 +7,7 @@ export class findAllBusinessCategoryDto extends PaginationDto {
     @IsEnum(OrderByEnum)
     @IsString()
     @IsOptional()
-    orderBy: OrderByEnum = OrderByEnum.ASC;
+    orderBy: OrderByEnum = OrderByEnum.DESC;
 
     @IsEnum(FindAllBusinessCategorySortByEnum)
     @IsString()

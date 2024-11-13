@@ -4,4 +4,6 @@ export interface PaginationResponseInterface {
     limit: number;
     totalPage: number;
     totalCount: number;
+    sortBy?: string;
+    orderBy?: string;
 }

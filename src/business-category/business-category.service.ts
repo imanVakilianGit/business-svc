@@ -84,7 +84,16 @@ export class BusinessCategoryService {
             );
 
             if (!totalCount) {
-                SUCCESS_FIND_ALL_BUSINESS_CATEGORY.data = paginationResult(0, dto.limit, dto.page, 0, 'businessCategories', []);
+                SUCCESS_FIND_ALL_BUSINESS_CATEGORY.data = paginationResult({
+                    totalCount: 0,
+                    limit: dto.limit,
+                    page: dto.page,
+                    count: 0,
+                    resultFieldName: 'businessCategories',
+                    ResultValue: [],
+                    sortBy: dto.sortBy,
+                    orderBy: dto.orderBy,
+                });
                 return <FindAllBusinessCategoryResponseType>SUCCESS_FIND_ALL_BUSINESS_CATEGORY;
             }
 
@@ -92,14 +101,16 @@ export class BusinessCategoryService {
                 this.businessCategoryQueryBuilder.findAll(omitObject(dto, 'page')),
             );
 
-            SUCCESS_FIND_ALL_BUSINESS_CATEGORY.data = paginationResult(
+            SUCCESS_FIND_ALL_BUSINESS_CATEGORY.data = paginationResult({
                 totalCount,
-                dto.limit,
-                dto.page,
-                result.length,
-                'businessCategories',
-                result,
-            );
+                limit: dto.limit,
+                page: dto.page,
+                count: result.length,
+                resultFieldName: 'businessCategories',
+                ResultValue: result,
+                sortBy: dto.sortBy,
+                orderBy: dto.orderBy,
+            });
 
             return <FindAllBusinessCategoryResponseType>SUCCESS_FIND_ALL_BUSINESS_CATEGORY;
         } catch (error) {
