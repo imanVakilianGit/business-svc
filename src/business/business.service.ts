@@ -8,10 +8,10 @@ import { BusinessCategoryRepository } from '../db-prisma/repositories/business-c
 import { businessCategoryWithOptionsTemplateRelationType } from '../business-category/common/types/entity/business-category-entity.type';
 import { CreateBusinessDto } from './common/dto/create.dto';
 import { CreateBusinessResponseType } from './common/types/response-type/create-response.type';
-import { FAILED_RELATION_BUSINESS_CATEGORY_NOT_FOUND } from './responses/error/failed-public.result';
+import { FAILED_BUSINESS_NOT_FOUND, FAILED_RELATION_BUSINESS_NOT_FOUND } from './responses/error/failed-public.result';
 import { FAILED_BUSINESS_ALREADY_EXIST, FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND } from './responses/error/failed-create.result';
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
-import { FindOneBusinessDto } from './common/dto/find-one.dto';
+import { FindOneByIdBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
 import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
 import { omitObject } from '../common/function/omit-object';
@@ -20,6 +20,9 @@ import { slugifyStrings } from '../common/function/slugify.func';
 import { SUCCESS_CREATE_BUSINESS } from './responses/success/success-create.result';
 import { SUCCESS_FIND_ALL_BUSINESS } from './responses/success/success-find-all.result';
 import { UpdateBusinessDto } from './common/dto/update.dto';
+import { SUCCESS_FIND_ONE_BY_ID_BUSINESS } from './responses/success/success-find-one-by-id.result';
+import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
+import { BusinessWithDetailType } from './common/types/entity/business-with-detail.type';
 
 @Injectable()
 export class BusinessService {
@@ -99,8 +102,16 @@ export class BusinessService {
         }
     }
 
-    findOne(dto: FindOneBusinessDto) {
-        return `This action returns a #${dto} business`;
+    async findOneById(dto: FindOneByIdBusinessDto): Promise<FindOneByIdBusinessResponseType> {
+        try {
+            const business: BusinessWithDetailType = await this._findOneOrFail(dto.id);
+
+            SUCCESS_FIND_ONE_BY_ID_BUSINESS.data = business;
+            return <FindOneByIdBusinessResponseType>SUCCESS_FIND_ONE_BY_ID_BUSINESS;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     findOneBySlug(dto: FindOneBySLugBusinessDto) {
@@ -115,7 +126,18 @@ export class BusinessService {
         const businessCategory = await this.businessCategoryRepository.findUnique<businessCategoryWithOptionsTemplateRelationType>(
             this.businessCategoryQueryBuilder.findOneByIdWithDetail(businessCategoryId),
         );
-        if (!businessCategory) throw new NotFoundException(FAILED_RELATION_BUSINESS_CATEGORY_NOT_FOUND);
+        if (!businessCategory) throw new NotFoundException(FAILED_RELATION_BUSINESS_NOT_FOUND);
         return businessCategory.options_template;
+    }
+
+    private async _findOneOrFail(id: number): Promise<BusinessWithDetailType>;
+    private async _findOneOrFail(slug: string): Promise<BusinessWithDetailType>;
+    private async _findOneOrFail(input: number | string): Promise<BusinessWithDetailType> {
+        let queryBuilder;
+        if (typeof input == 'number') queryBuilder = this.businessQueryBuilder.findById(input);
+        else queryBuilder = this.businessQueryBuilder.findBySlug(input);
+        const databaseResult: BusinessWithDetailType = await this.businessRepository.findUnique<BusinessWithDetailType>(queryBuilder);
+        if (!databaseResult) throw new NotFoundException(FAILED_BUSINESS_NOT_FOUND);
+        return databaseResult;
     }
 }

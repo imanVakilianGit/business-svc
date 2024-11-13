@@ -19,4 +19,8 @@ export class BusinessRepository {
     async findAll<T extends business>(data: Prisma.businessFindManyArgs<DefaultArgs>): Promise<T[]> {
         return <T[]>await this.prismaClient.business.findMany(data);
     }
+
+    async findUnique<T extends business>(data: Prisma.businessFindUniqueArgs<DefaultArgs>): Promise<T> {
+        return <T>await this.prismaClient.business.findUnique(data);
+    }
 }

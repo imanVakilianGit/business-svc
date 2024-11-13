@@ -66,4 +66,58 @@ export class BusinessQueryBuilder {
             },
         };
     }
+
+    findById(id: number): Prisma.businessFindUniqueArgs<DefaultArgs> {
+        return {
+            where: {
+                id,
+            },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                created_at: true,
+                updated_at: true,
+                owner: {
+                    select: {
+                        id: true,
+                        first_name: true,
+                        last_name: true,
+                        email: true,
+                    },
+                },
+                business_category: {
+                    select: {
+                        title: true,
+                    },
+                },
+                options: {
+                    select: {
+                        title: true,
+                        value: true,
+                    },
+                },
+                extra_options: {
+                    select: {
+                        title: true,
+                        value: true,
+                    },
+                },
+            },
+        };
+    }
+
+    findBySlug(slug: string): Prisma.businessFindUniqueArgs<DefaultArgs> {
+        return {
+            where: {
+                slug,
+            },
+            include: {
+                owner: true,
+                business_category: true,
+                options: true,
+                extra_options: true,
+            },
+        };
+    }
 }
