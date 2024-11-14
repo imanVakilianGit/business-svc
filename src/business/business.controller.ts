@@ -9,6 +9,7 @@ import { FindOneByIdBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
 import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
 import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
+import { FindOneBySlugBusinessResponseType } from './common/types/response-type/find-one-by-slug-response.type';
 import { UpdateBusinessDto } from './common/dto/update.dto';
 
 @Controller()
@@ -31,7 +32,7 @@ export class BusinessController {
     }
 
     @MessagePattern('find_one_by_slug_business')
-    findOneBySlug(@Payload() dto: FindOneBySLugBusinessDto) {
+    findOneBySlug(@Payload() dto: FindOneBySLugBusinessDto): Promise<FindOneBySlugBusinessResponseType> {
         return this.businessService.findOneBySlug(dto);
     }
 

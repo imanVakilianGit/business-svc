@@ -9,16 +9,20 @@ import {
     IsOptional,
     IsString,
     Length,
+    Matches,
     Min,
     ValidateNested,
 } from 'class-validator';
+import { GENERAL_LETTER_REGEX } from '../../../common/regex/letter.regex';
 
 class options {
+    @Matches(GENERAL_LETTER_REGEX)
     @Length(2, 25)
     @IsString()
     @IsNotEmpty()
     title: string;
 
+    @Matches(GENERAL_LETTER_REGEX)
     @Length(2, 25)
     @IsString()
     @IsNotEmpty()
@@ -36,6 +40,7 @@ export class CreateBusinessDto {
     @IsNotEmpty()
     businessCategoryId: number;
 
+    @Matches(GENERAL_LETTER_REGEX)
     @Length(2, 25)
     @IsString()
     @IsNotEmpty()

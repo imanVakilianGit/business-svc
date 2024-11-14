@@ -5,6 +5,7 @@ import { BusinessRepository } from '../db-prisma/repositories/business.repositor
 import { BusinessQueryBuilder } from '../db-prisma/query-builders/business.query-builder';
 import { BusinessCategoryQueryBuilder } from '../db-prisma/query-builders/business-category.query-builder';
 import { BusinessCategoryRepository } from '../db-prisma/repositories/business-category.repository';
+import { BusinessWithDetailType } from './common/types/entity/business-with-detail.type';
 import { businessCategoryWithOptionsTemplateRelationType } from '../business-category/common/types/entity/business-category-entity.type';
 import { CreateBusinessDto } from './common/dto/create.dto';
 import { CreateBusinessResponseType } from './common/types/response-type/create-response.type';
@@ -14,15 +15,16 @@ import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneByIdBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
 import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
+import { FindOneBySlugBusinessResponseType } from './common/types/response-type/find-one-by-slug-response.type';
+import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
 import { omitObject } from '../common/function/omit-object';
 import { paginationResult } from '../common/function/patination-result.func';
 import { slugifyStrings } from '../common/function/slugify.func';
 import { SUCCESS_CREATE_BUSINESS } from './responses/success/success-create.result';
 import { SUCCESS_FIND_ALL_BUSINESS } from './responses/success/success-find-all.result';
-import { UpdateBusinessDto } from './common/dto/update.dto';
 import { SUCCESS_FIND_ONE_BY_ID_BUSINESS } from './responses/success/success-find-one-by-id.result';
-import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
-import { BusinessWithDetailType } from './common/types/entity/business-with-detail.type';
+import { SUCCESS_FIND_ONE_BY_SLUG_BUSINESS } from './responses/success/success-find-one-by-slug.result';
+import { UpdateBusinessDto } from './common/dto/update.dto';
 
 @Injectable()
 export class BusinessService {
@@ -109,13 +111,19 @@ export class BusinessService {
             SUCCESS_FIND_ONE_BY_ID_BUSINESS.data = business;
             return <FindOneByIdBusinessResponseType>SUCCESS_FIND_ONE_BY_ID_BUSINESS;
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }
 
-    findOneBySlug(dto: FindOneBySLugBusinessDto) {
-        return `This action returns a #${dto} business`;
+    async findOneBySlug(dto: FindOneBySLugBusinessDto): Promise<FindOneBySlugBusinessResponseType> {
+        try {
+            const business: BusinessWithDetailType = await this._findOneOrFail(dto.slug);
+
+            SUCCESS_FIND_ONE_BY_SLUG_BUSINESS.data = business;
+            return <FindOneBySlugBusinessResponseType>SUCCESS_FIND_ONE_BY_SLUG_BUSINESS;
+        } catch (error) {
+            throw error;
+        }
     }
 
     update(dto: UpdateBusinessDto) {
