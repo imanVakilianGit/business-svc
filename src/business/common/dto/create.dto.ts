@@ -15,7 +15,7 @@ import {
 } from 'class-validator';
 import { GENERAL_LETTER_REGEX } from '../../../common/regex/letter.regex';
 
-class options {
+export class optionsDto {
     @Matches(GENERAL_LETTER_REGEX)
     @Length(2, 25)
     @IsString()
@@ -28,6 +28,8 @@ class options {
     @IsNotEmpty()
     value: string;
 }
+
+export class ExtraOptionsDto extends optionsDto {}
 
 export class CreateBusinessDto {
     @Min(1)
@@ -47,18 +49,18 @@ export class CreateBusinessDto {
     name: string;
 
     @ValidateNested({ each: true })
-    @Type(() => options)
+    @Type(() => optionsDto)
     @ArrayMaxSize(15)
     @ArrayMinSize(2)
     @ArrayNotEmpty()
     @IsArray()
     @IsNotEmpty()
-    options: options[];
+    options: optionsDto[];
 
     @ValidateNested({ each: true })
-    @Type(() => options)
+    @Type(() => optionsDto)
     @ArrayMaxSize(10)
     @IsArray()
     @IsOptional()
-    extraOptions: options[];
+    extraOptions: ExtraOptionsDto[];
 }

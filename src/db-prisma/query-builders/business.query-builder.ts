@@ -2,8 +2,44 @@ import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { CreateBusinessInputInterface } from '../../business/common/interface/input/create-input.interface';
 import { FindAllBusinessDto } from '../../business/common/dto/find-all.dto';
+import { UpdateBusinessInputInterface } from '../../business/common/interface/input/update-input.interface';
 
 export class BusinessQueryBuilder {
+    private readonly allDetailsSelectionFields = {
+        id: true,
+        name: true,
+        slug: true,
+        created_at: true,
+        updated_at: true,
+        owner: {
+            select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+            },
+        },
+        business_category: {
+            select: {
+                title: true,
+            },
+        },
+        options: {
+            select: {
+                id: true,
+                title: true,
+                value: true,
+            },
+        },
+        extra_options: {
+            select: {
+                id: true,
+                title: true,
+                value: true,
+            },
+        },
+    };
+
     create(data: CreateBusinessInputInterface): Prisma.businessCreateArgs<DefaultArgs> {
         return {
             data: <Prisma.businessCreateInput>{
@@ -30,12 +66,7 @@ export class BusinessQueryBuilder {
                     },
                 },
             },
-            include: {
-                owner: true,
-                business_category: true,
-                options: true,
-                extra_options: true,
-            },
+            select: this.allDetailsSelectionFields,
         };
     }
 
@@ -72,38 +103,7 @@ export class BusinessQueryBuilder {
             where: {
                 id,
             },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                created_at: true,
-                updated_at: true,
-                owner: {
-                    select: {
-                        id: true,
-                        first_name: true,
-                        last_name: true,
-                        email: true,
-                    },
-                },
-                business_category: {
-                    select: {
-                        title: true,
-                    },
-                },
-                options: {
-                    select: {
-                        title: true,
-                        value: true,
-                    },
-                },
-                extra_options: {
-                    select: {
-                        title: true,
-                        value: true,
-                    },
-                },
-            },
+            select: this.allDetailsSelectionFields,
         };
     }
 
@@ -112,12 +112,40 @@ export class BusinessQueryBuilder {
             where: {
                 slug,
             },
-            include: {
-                owner: true,
-                business_category: true,
-                options: true,
-                extra_options: true,
+            select: this.allDetailsSelectionFields,
+        };
+    }
+
+    update(data: UpdateBusinessInputInterface): Prisma.businessUpdateArgs<DefaultArgs> {
+        let options: Array<Prisma.business_optionsUpdateArgs<DefaultArgs>> = [];
+        if (data.options && data.options.length > 0) {
+            options = data.options.map((option) => {
+                return { where: { id: option.id }, data: { value: option.value } };
+            });
+        }
+
+        let extraOptions: Array<Prisma.business_extra_optionsUpdateArgs<DefaultArgs>> = [];
+        if (data.extraOptions && data.extraOptions.length > 0) {
+            extraOptions = data.extraOptions.map((option) => {
+                return { where: { id: option.id }, data: { title: option.title, value: option.value } };
+            });
+        }
+
+        return {
+            where: {
+                id: data.id,
             },
+            data: <Prisma.businessUpdateInput>{
+                name: data.name,
+                slug: data.slug,
+                options: {
+                    updateMany: options,
+                },
+                extra_options: {
+                    updateMany: extraOptions,
+                },
+            },
+            select: this.allDetailsSelectionFields,
         };
     }
 }

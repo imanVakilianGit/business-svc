@@ -11,6 +11,7 @@ import { FindAllBusinessResponseType } from './common/types/response-type/find-a
 import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
 import { FindOneBySlugBusinessResponseType } from './common/types/response-type/find-one-by-slug-response.type';
 import { UpdateBusinessDto } from './common/dto/update.dto';
+import { UpdateBusinessResponseType } from './common/types/response-type/update-response.type';
 
 @Controller()
 export class BusinessController {
@@ -37,7 +38,7 @@ export class BusinessController {
     }
 
     @MessagePattern('update_business')
-    update(@Payload() updateBusinessDto: UpdateBusinessDto) {
+    update(@Payload() updateBusinessDto: UpdateBusinessDto): Promise<UpdateBusinessResponseType> {
         return this.businessService.update(updateBusinessDto);
     }
 }

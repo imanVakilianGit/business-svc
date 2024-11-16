@@ -9,8 +9,6 @@ import { BusinessWithDetailType } from './common/types/entity/business-with-deta
 import { businessCategoryWithOptionsTemplateRelationType } from '../business-category/common/types/entity/business-category-entity.type';
 import { CreateBusinessDto } from './common/dto/create.dto';
 import { CreateBusinessResponseType } from './common/types/response-type/create-response.type';
-import { FAILED_BUSINESS_NOT_FOUND, FAILED_RELATION_BUSINESS_NOT_FOUND } from './responses/error/failed-public.result';
-import { FAILED_BUSINESS_ALREADY_EXIST, FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND } from './responses/error/failed-create.result';
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneByIdBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
@@ -24,7 +22,14 @@ import { SUCCESS_CREATE_BUSINESS } from './responses/success/success-create.resu
 import { SUCCESS_FIND_ALL_BUSINESS } from './responses/success/success-find-all.result';
 import { SUCCESS_FIND_ONE_BY_ID_BUSINESS } from './responses/success/success-find-one-by-id.result';
 import { SUCCESS_FIND_ONE_BY_SLUG_BUSINESS } from './responses/success/success-find-one-by-slug.result';
+import { SUCCESS_UPDATE_BUSINESS } from './responses/success/success-update.result';
 import { UpdateBusinessDto } from './common/dto/update.dto';
+import { UpdateBusinessResponseType } from './common/types/response-type/update-response.type';
+import {
+    FAILED_BUSINESS_NOT_FOUND,
+    FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND,
+    FAILED_BUSINESS_ALREADY_EXIST,
+} from './responses/error/failed-public.result';
 
 @Injectable()
 export class BusinessService {
@@ -52,8 +57,8 @@ export class BusinessService {
             SUCCESS_CREATE_BUSINESS.data = databaseResult;
             return <CreateBusinessResponseType>SUCCESS_CREATE_BUSINESS;
         } catch (error) {
-            if (error.code === 'P2002' && error.meta.target) {
-                FAILED_BUSINESS_ALREADY_EXIST.field = error.meta.target;
+            if (error.code === 'P2002') {
+                FAILED_BUSINESS_ALREADY_EXIST.field = error.meta?.target ?? '';
                 throw new ConflictException(FAILED_BUSINESS_ALREADY_EXIST);
             }
             if (error.code === 'P2025') {
@@ -126,15 +131,31 @@ export class BusinessService {
         }
     }
 
-    update(dto: UpdateBusinessDto) {
-        return `This action updates a #${dto} business`;
+    async update(dto: UpdateBusinessDto & { slug?: string }): Promise<UpdateBusinessResponseType> {
+        try {
+            if (dto.name) dto.slug = slugifyStrings(dto.name);
+
+            const databaseResult: BusinessWithDetailType = await this.businessRepository.update(this.businessQueryBuilder.update(dto));
+
+            SUCCESS_UPDATE_BUSINESS.data = databaseResult;
+            return <UpdateBusinessResponseType>SUCCESS_UPDATE_BUSINESS;
+        } catch (error) {
+            if (error.code === 'P2002') {
+                FAILED_BUSINESS_ALREADY_EXIST.field = error.meta?.target ?? '';
+                throw new ConflictException(FAILED_BUSINESS_ALREADY_EXIST);
+            }
+            if (error.code === 'P2025') {
+                throw new NotFoundException(FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND);
+            }
+            throw error;
+        }
     }
     // ====================================================================================
     private async _getOptionsTemplate(businessCategoryId: number) {
         const businessCategory = await this.businessCategoryRepository.findUnique<businessCategoryWithOptionsTemplateRelationType>(
             this.businessCategoryQueryBuilder.findOneByIdWithDetail(businessCategoryId),
         );
-        if (!businessCategory) throw new NotFoundException(FAILED_RELATION_BUSINESS_NOT_FOUND);
+        if (!businessCategory) throw new NotFoundException(FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND);
         return businessCategory.options_template;
     }
 
