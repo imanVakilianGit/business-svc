@@ -1,0 +1,23 @@
+model business_category {
+    id               Int                                  @id() @default(autoincrement())
+    created_at       DateTime                             @default(now())
+    updated_at       DateTime                             @default(now()) @updatedAt
+    title            String                               @unique
+    slug             String                               @unique
+    description      String?
+    business         business[]
+    options_template business_category_options_template[]
+
+    @@schema("common")
+}
+
+model business_category_options_template {
+    id                   Int               @id() @default(autoincrement())
+    created_at           DateTime          @default(now())
+    updated_at           DateTime          @default(now()) @updatedAt
+    title                String
+    business_category_id Int
+    business_category    business_category @relation(fields: [business_category_id], references: [id])
+
+    @@schema("common")
+}

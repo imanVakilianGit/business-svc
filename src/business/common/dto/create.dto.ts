@@ -35,7 +35,7 @@ export class CreateBusinessDto {
     @Min(1)
     @IsNumber()
     @IsNotEmpty()
-    ownerId: number;
+    managerId: number;
 
     @Min(1)
     @IsNumber()

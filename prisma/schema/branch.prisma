@@ -1,0 +1,32 @@
+model branch {
+    id          Int        @id() @default(autoincrement())
+    created_at  DateTime   @default(now())
+    updated_at  DateTime   @default(now()) @updatedAt
+    business_id Int
+    manager_id  Int
+    name        String
+    description String
+    code        String     @unique
+    is_active   Boolean    @default(true)
+    address     address?
+    employees   employee[]
+    manager     manager    @relation(fields: [manager_id], references: [employee_id])
+
+    @@schema("common")
+}
+
+model section {
+    id          Int        @id() @default(autoincrement())
+    created_at  DateTime   @default(now())
+    updated_at  DateTime   @default(now()) @updatedAt
+    business_id Int
+    manager_id  Int
+    name        String
+    description String
+    code        String     @unique
+    is_active   Boolean    @default(true)
+    employees   employee[]
+    manager     manager    @relation(fields: [manager_id], references: [employee_id])
+
+    @@schema("common")
+}

@@ -8,10 +8,8 @@ model admin {
     first_name    String
     last_name     String
     birth_date    DateTime?
-    role          admin_role_enum           @default(ADMIN)
     active_status active_status_enum        @default(ACTIVE)
     refresh_token admins_on_refresh_tokens?
-    businesses    business[]
 
     @@schema("common")
 }
@@ -27,13 +25,6 @@ model admins_on_refresh_tokens {
     ip         String
     browser    String
     admin      admin    @relation(fields: [admin_id], references: [id])
-
-    @@schema("common")
-}
-
-enum admin_role_enum {
-    SUPER_ADMIN
-    ADMIN
 
     @@schema("common")
 }

@@ -1,0 +1,38 @@
+model employee {
+    id            Int       @id @default(autoincrement())
+    created_at    DateTime  @default(now())
+    updated_at    DateTime  @default(now()) @updatedAt
+    user_id       Int
+    business_id   Int
+    branch_id     Int?
+    section_id    Int?
+    employee_code String    @unique
+    role          String
+    salary        Int?
+    is_active     Boolean   @default(true)
+    started_at    DateTime  @default(now())
+    ended_at      DateTime?
+    user          user      @relation(fields: [user_id], references: [id])
+    business      business  @relation(fields: [business_id], references: [id])
+    branch        branch?   @relation(fields: [branch_id], references: [id])
+    section       section?  @relation(fields: [section_id], references: [id])
+    manager       manager?
+
+    @@schema("common")
+}
+
+model manager {
+    created_at  DateTime   @default(now())
+    updated_at  DateTime   @default(now()) @updatedAt
+    employee_id Int        @unique
+    is_active   Boolean    @default(true)
+    started_at  DateTime   @default(now())
+    ended_at    DateTime?
+    employee    employee   @relation(fields: [employee_id], references: [id])
+    businesses  business[]
+    branches    branch[]
+    sections    section[]
+
+    @@id(fields: [employee_id])
+    @@schema("common")
+}

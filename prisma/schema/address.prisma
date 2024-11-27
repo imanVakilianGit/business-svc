@@ -1,0 +1,44 @@
+model province {
+    id         Int       @id() @default(autoincrement())
+    created_at DateTime  @default(now())
+    updated_at DateTime  @default(now()) @updatedAt
+    name       String    @unique
+    code       String    @unique
+    info       String?
+    cities     city[]
+    address    address[]
+
+    @@schema("common")
+}
+
+model city {
+    id          Int       @id() @default(autoincrement())
+    created_at  DateTime  @default(now())
+    updated_at  DateTime  @default(now()) @updatedAt
+    name        String    @unique
+    info        String?
+    province_id Int
+    province    province  @relation(fields: [province_id], references: [id])
+    address     address[]
+
+    @@schema("common")
+}
+
+model address {
+    id              Int      @id() @default(autoincrement())
+    created_at      DateTime @default(now())
+    updated_at      DateTime @default(now()) @updatedAt
+    province_id     Int
+    city_id         Int
+    branch_id       Int      @unique
+    district        String
+    street          String
+    alley           String
+    building_number Int
+    postal_code     String   @unique
+    province        province @relation(fields: [province_id], references: [id])
+    city            city     @relation(fields: [city_id], references: [id])
+    branch          branch   @relation(fields: [branch_id], references: [id])
+
+    @@schema("common")
+}

@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { CreateBusinessInputInterface } from '../../business/common/interface/input/create-input.interface';
+
+import { CreateBusinessDto } from '../../business/common/dto/create.dto';
 import { FindAllBusinessDto } from '../../business/common/dto/find-all.dto';
 import { UpdateBusinessInputInterface } from '../../business/common/interface/input/update-input.interface';
 
@@ -40,14 +41,14 @@ export class BusinessQueryBuilder {
         },
     };
 
-    create(data: CreateBusinessInputInterface): Prisma.businessCreateArgs<DefaultArgs> {
+    create(data: CreateBusinessDto & { slug: string }): Prisma.businessCreateArgs<DefaultArgs> {
         return {
             data: <Prisma.businessCreateInput>{
                 name: data.name,
                 slug: data.slug,
-                owner: {
+                manager: {
                     connect: {
-                        id: data.ownerId,
+                        employee_id: data.managerId,
                     },
                 },
                 business_category: {

@@ -2,38 +2,16 @@ model business {
     id                   Int                      @id() @default(autoincrement())
     created_at           DateTime                 @default(now())
     updated_at           DateTime                 @default(now()) @updatedAt
-    owner_id             Int
+    manager_id           Int
     name                 String                   @unique
     slug                 String                   @unique
     business_category_id Int
-    owner                admin                    @relation(fields: [owner_id], references: [id])
+    is_active            Boolean                  @default(true)
     business_category    business_category        @relation(fields: [business_category_id], references: [id])
     options              business_options[]
     extra_options        business_extra_options[]
-
-    @@schema("common")
-}
-
-model business_category {
-    id               Int                                  @id() @default(autoincrement())
-    created_at       DateTime                             @default(now())
-    updated_at       DateTime                             @default(now()) @updatedAt
-    title            String                               @unique
-    slug             String                               @unique
-    description      String?
-    business         business[]
-    options_template business_category_options_template[]
-
-    @@schema("common")
-}
-
-model business_category_options_template {
-    id                   Int               @id() @default(autoincrement())
-    created_at           DateTime          @default(now())
-    updated_at           DateTime          @default(now()) @updatedAt
-    title                String
-    business_category_id Int
-    business_category    business_category @relation(fields: [business_category_id], references: [id])
+    employees            employee[]
+    manager              manager                  @relation(fields: [manager_id], references: [employee_id])
 
     @@schema("common")
 }
