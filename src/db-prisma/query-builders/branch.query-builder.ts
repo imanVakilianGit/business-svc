@@ -1,0 +1,29 @@
+import { Prisma } from '@prisma/client';
+
+import { CreateBranchDto } from '../../branch/common/dto/create.dto';
+
+export class BranchQueryBuilder {
+    create(data: CreateBranchDto & { code: string }) {
+        return {
+            data: {
+                name: data.name,
+                description: data.description,
+                code: data.code,
+                business: {
+                    connect: {
+                        id: data.businessId,
+                    },
+                },
+                manager: {
+                    connect: {
+                        employee_id: data.managerEmployeeCode,
+                    },
+                },
+            } as Prisma.branchCreateInput,
+            include: {
+                business: true,
+                manager: true,
+            },
+        };
+    }
+}

@@ -5,6 +5,8 @@ import { BusinessCategoryQueryBuilder } from './query-builders/business-category
 import { BusinessCategoryRepository } from './repositories/business-category.repository';
 import { BusinessQueryBuilder } from './query-builders/business.query-builder';
 import { BusinessRepository } from './repositories/business.repository';
+import { BranchQueryBuilder } from './query-builders/branch.query-builder';
+import { BranchRepository } from './repositories/branch.repository';
 
 @Module({
     providers: [
@@ -14,7 +16,16 @@ import { BusinessRepository } from './repositories/business.repository';
         BusinessCategoryRepository,
         BusinessQueryBuilder,
         BusinessRepository,
+        BranchQueryBuilder,
+        BranchRepository,
     ],
-    exports: [BusinessCategoryQueryBuilder, BusinessCategoryRepository, BusinessQueryBuilder, BusinessRepository],
+    exports: [
+        BusinessCategoryQueryBuilder,
+        BusinessCategoryRepository,
+        BusinessQueryBuilder,
+        BusinessRepository,
+        BranchQueryBuilder,
+        BranchRepository,
+    ],
 })
 export class DbPrismaModule {}

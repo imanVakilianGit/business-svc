@@ -12,6 +12,7 @@ model business {
     extra_options        business_extra_options[]
     employees            employee[]
     manager              manager                  @relation(fields: [manager_id], references: [employee_id])
+    branches             branch[]
 
     @@schema("common")
 }

@@ -11,6 +11,7 @@ model branch {
     address     address?
     employees   employee[]
     manager     manager    @relation(fields: [manager_id], references: [employee_id])
+    business    business?  @relation(fields: [business_id], references: [id])
 
     @@schema("common")
 }
