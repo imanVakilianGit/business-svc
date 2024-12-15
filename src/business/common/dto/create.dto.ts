@@ -35,11 +35,6 @@ export class CreateBusinessDto {
     @Min(1)
     @IsNumber()
     @IsNotEmpty()
-    managerId: number;
-
-    @Min(1)
-    @IsNumber()
-    @IsNotEmpty()
     businessCategoryId: number;
 
     @Matches(GENERAL_LETTER_REGEX)
