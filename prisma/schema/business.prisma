@@ -11,7 +11,7 @@ model business {
     options              business_options[]
     extra_options        business_extra_options[]
     employees            employee[]
-    manager              manager?                 @relation(fields: [manager_id], references: [employee_id])
+    manager              manager?                 @relation(fields: [manager_id], references: [id])
     branches             branch[]
 
     @@schema("common")

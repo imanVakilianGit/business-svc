@@ -16,12 +16,13 @@ model employee {
     business      business  @relation(fields: [business_id], references: [id])
     branch        branch?   @relation(fields: [branch_id], references: [id])
     section       section?  @relation(fields: [section_id], references: [id])
-    manager       manager?
+    manager       manager[]
 
     @@schema("common")
 }
 
 model manager {
+    id          Int        @id @default(autoincrement())
     created_at  DateTime   @default(now())
     updated_at  DateTime   @default(now()) @updatedAt
     employee_id Int
@@ -33,6 +34,5 @@ model manager {
     branches    branch[]
     sections    section[]
 
-    @@id(fields: [employee_id])
     @@schema("common")
 }

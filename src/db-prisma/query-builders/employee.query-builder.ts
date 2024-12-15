@@ -56,4 +56,13 @@ export class EmployeeQueryBuilder {
             },
         };
     }
+
+    findOneWithActivationStatus(id: number, isActive: boolean) /* : Prisma.employeeFindFirstArgs<DefaultArgs> */ {
+        return {
+            where: {
+                id,
+                is_active: isActive,
+            },
+        };
+    }
 }

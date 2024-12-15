@@ -10,7 +10,7 @@ model branch {
     is_active   Boolean    @default(true)
     address     address?
     employees   employee[]
-    manager     manager    @relation(fields: [manager_id], references: [employee_id])
+    manager     manager    @relation(fields: [manager_id], references: [id])
     business    business   @relation(fields: [business_id], references: [id])
 
     @@schema("common")
@@ -27,7 +27,7 @@ model section {
     code        String     @unique
     is_active   Boolean    @default(true)
     employees   employee[]
-    manager     manager    @relation(fields: [manager_id], references: [employee_id])
+    manager     manager    @relation(fields: [manager_id], references: [id])
 
     @@schema("common")
 }

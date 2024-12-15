@@ -14,3 +14,13 @@ export const FAILED_USER_NOT_FOUND: BaseFailedResponseInterface = {
     message: 'user not found',
     code: 'FAILED_USER_NOT_FOUND',
 };
+
+export const FAILED_MANAGER_NOT_FOUND: BaseFailedResponseInterface = {
+    message: 'manager not found',
+    code: 'FAILED_MANAGER_NOT_FOUND',
+};
+
+export const FAILED_MANAGER_ALREADY_EXISTS: BaseFailedResponseInterface = {
+    message: 'manager already exists',
+    code: 'FAILED_MANAGER_ALREADY_EXISTS',
+};

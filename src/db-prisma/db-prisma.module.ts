@@ -9,6 +9,8 @@ import { BranchRepository } from './repositories/branch.repository';
 import { DbPrismaService } from './db-prisma.service';
 import { EmployeeQueryBuilder } from './query-builders/employee.query-builder';
 import { EmployeeRepository } from './repositories/employee.repository';
+import { ManagerQueryBuilder } from './query-builders/manager.query-builder';
+import { ManagerRepository } from './repositories/manager.repository';
 import { SectionQueryBuilder } from './query-builders/section.query-builder';
 import { SectionRepository } from './repositories/section.repository';
 import { UserRepository } from './repositories/user.repository';
@@ -30,6 +32,8 @@ import { UserQueryBuilder } from './query-builders/user.query-builder';
         BranchRepository,
         SectionQueryBuilder,
         SectionRepository,
+        ManagerQueryBuilder,
+        ManagerRepository,
     ],
     exports: [
         BusinessCategoryQueryBuilder,
@@ -44,6 +48,8 @@ import { UserQueryBuilder } from './query-builders/user.query-builder';
         BranchRepository,
         SectionQueryBuilder,
         SectionRepository,
+        ManagerQueryBuilder,
+        ManagerRepository,
     ],
 })
 export class DbPrismaModule {}

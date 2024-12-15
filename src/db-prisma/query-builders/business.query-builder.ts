@@ -6,18 +6,28 @@ import { FindAllBusinessDto } from '../../business/common/dto/find-all.dto';
 import { UpdateBusinessInputInterface } from '../../business/common/interface/input/update-input.interface';
 
 export class BusinessQueryBuilder {
-    private readonly allDetailsSelectionFields = {
+    private readonly allDetailsSelectionFields: Prisma.businessSelect = {
         id: true,
         name: true,
         slug: true,
         created_at: true,
         updated_at: true,
-        owner: {
+        manager: {
             select: {
                 id: true,
-                first_name: true,
-                last_name: true,
-                email: true,
+                employee: {
+                    select: {
+                        id: true,
+                        user: {
+                            select: {
+                                id: true,
+                                first_name: true,
+                                last_name: true,
+                                email: true,
+                            },
+                        },
+                    },
+                },
             },
         },
         business_category: {
@@ -46,11 +56,6 @@ export class BusinessQueryBuilder {
             data: <Prisma.businessCreateInput>{
                 name: data.name,
                 slug: data.slug,
-                manager: {
-                    connect: {
-                        employee_id: data.managerId,
-                    },
-                },
                 business_category: {
                     connect: {
                         id: data.businessCategoryId,
