@@ -24,7 +24,7 @@ model employee {
 model manager {
     created_at  DateTime   @default(now())
     updated_at  DateTime   @default(now()) @updatedAt
-    employee_id Int        @unique
+    employee_id Int
     is_active   Boolean    @default(true)
     started_at  DateTime   @default(now())
     ended_at    DateTime?
