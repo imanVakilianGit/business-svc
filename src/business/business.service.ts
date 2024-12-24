@@ -149,6 +149,7 @@ export class BusinessService {
 
     async update(dto: UpdateBusinessDto & { slug?: string }): Promise<UpdateBusinessResponseType> {
         try {
+            await this._findOneOrFail(dto.id);
             if (dto.name) dto.slug = slugifyStrings(dto.name);
 
             const databaseResult: BusinessWithDetailType = await this.businessRepository.update(this.businessQueryBuilder.update(dto));
