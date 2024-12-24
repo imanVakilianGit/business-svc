@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
+// import { Prisma } from '@prisma/client';
+// import { DefaultArgs } from '@prisma/client/runtime/library';
 
 import { CreateEmployeeDto } from '../../employee/common/dto/create.dto';
 
@@ -53,6 +53,14 @@ export class EmployeeQueryBuilder {
             where: {
                 user_id: userId,
                 is_active: isActive,
+            },
+        };
+    }
+
+    findOneByUserId(userId: number) /* : Prisma.employeeFindFirstArgs<DefaultArgs> */ {
+        return {
+            where: {
+                user_id: userId,
             },
         };
     }

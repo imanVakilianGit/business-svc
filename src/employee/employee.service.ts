@@ -49,9 +49,9 @@ export class EmployeeService {
         try {
             await this._findOneUserOrFailById(dto.userId);
             await this._findOneBusinessOrFailById(dto.businessId);
+            await this._checkExistenceEmployeeByUserIdWithActivationStatus(dto.userId, true, 'no');
             if (dto.branchId) await this._findOneBranchOrFailById(dto.branchId);
             if (dto.sectionId) await this._findOneSectionOrFailById(dto.sectionId);
-            await this._checkExistenceEmployeeByUserIdWithActivationStatus(dto.userId, true, 'no');
 
             dto = {
                 ...dto,

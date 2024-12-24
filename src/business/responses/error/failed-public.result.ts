@@ -16,3 +16,8 @@ export const FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND: BaseFailedResponseInterface
     code: 'FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND',
     field: '',
 };
+
+export const FAILED_YOU_ARE_IN_A_BUSINESS_ALREADY: BaseFailedResponseInterface = {
+    message: 'you are already working in another business\n if you want create a new business you should not work any business',
+    code: 'FAILED_YOU_ARE_IN_A_BUSINESS_ALREADY',
+};

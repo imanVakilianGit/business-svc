@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { business, business_category_options_template } from '@prisma/client';
+import { randomInt } from 'crypto';
 
 import { BusinessRepository } from '../db-prisma/repositories/business.repository';
 import { BusinessQueryBuilder } from '../db-prisma/query-builders/business.query-builder';
@@ -9,13 +10,18 @@ import { BusinessWithDetailType } from './common/types/entity/business-with-deta
 import { businessCategoryWithOptionsTemplateRelationType } from '../business-category/common/types/entity/business-category-entity.type';
 import { CreateBusinessDto } from './common/dto/create.dto';
 import { CreateBusinessResponseType } from './common/types/response-type/create-response.type';
+import { EmployeeRepository } from '../db-prisma/repositories/employee.repository';
+import { EmployeeQueryBuilder } from '../db-prisma/query-builders/employee.query-builder';
 import { FindAllBusinessDto } from './common/dto/find-all.dto';
 import { FindOneByIdBusinessDto } from './common/dto/find-one.dto';
 import { FindOneBySLugBusinessDto } from './common/dto/find-one-by-slug.dto';
 import { FindAllBusinessResponseType } from './common/types/response-type/find-all-response.type';
 import { FindOneBySlugBusinessResponseType } from './common/types/response-type/find-one-by-slug-response.type';
 import { FindOneByIdBusinessResponseType } from './common/types/response-type/find-one-by-id-response.type';
+import { FAILED_EMPLOYEE_NOT_FOUND } from '../employee/response/error/failed-public.result';
 import { omitObject } from '../common/function/omit-object';
+import { ManagerQueryBuilder } from '../db-prisma/query-builders/manager.query-builder';
+import { ManagerRepository } from '../db-prisma/repositories/manager.repository';
 import { paginationResult } from '../common/function/patination-result.func';
 import { slugifyStrings } from '../common/function/slugify.func';
 import { SUCCESS_CREATE_BUSINESS } from './responses/success/success-create.result';
@@ -29,6 +35,7 @@ import {
     FAILED_BUSINESS_NOT_FOUND,
     FAILED_RELATIONS_OF_BUSINESS_NOT_FOUND,
     FAILED_BUSINESS_ALREADY_EXIST,
+    FAILED_YOU_ARE_IN_A_BUSINESS_ALREADY,
 } from './responses/error/failed-public.result';
 
 @Injectable()
@@ -38,10 +45,16 @@ export class BusinessService {
         private readonly businessRepository: BusinessRepository,
         private readonly businessCategoryQueryBuilder: BusinessCategoryQueryBuilder,
         private readonly businessCategoryRepository: BusinessCategoryRepository,
+        private readonly employeeQueryBuilder: EmployeeQueryBuilder,
+        private readonly employeeRepository: EmployeeRepository,
+        private readonly managerQueryBuilder: ManagerQueryBuilder,
+        private readonly managerRepository: ManagerRepository,
     ) {}
 
     async create(dto: CreateBusinessDto | (CreateBusinessDto & { slug: string })): Promise<CreateBusinessResponseType> {
         try {
+            await this._checkExistenceEmployeeByUserIdWithActivationStatus(dto.userId, true, 'no');
+
             dto = { ...dto, slug: slugifyStrings(dto.name) };
 
             const optionsTemplate: business_category_options_template[] = await this._getOptionsTemplate(dto.businessCategoryId);
@@ -52,9 +65,12 @@ export class BusinessService {
                 if (!optionsTemplateTitles.includes(option.title)) throw new BadRequestException();
             });
 
-            const databaseResult: business = await this.businessRepository.create(this.businessQueryBuilder.create(dto));
+            let business: business = await this.businessRepository.create(this.businessQueryBuilder.create(dto));
+            const { manager } = await this._createEmployeeAndPromoteToManager(dto.userId, business.id);
 
-            SUCCESS_CREATE_BUSINESS.data = databaseResult;
+            business = await this.businessRepository.update(this.businessQueryBuilder.setManager(business.id, manager.id));
+
+            SUCCESS_CREATE_BUSINESS.data = business;
             return <CreateBusinessResponseType>SUCCESS_CREATE_BUSINESS;
         } catch (error) {
             if (error.code === 'P2002') {
@@ -168,5 +184,33 @@ export class BusinessService {
         const databaseResult: BusinessWithDetailType = await this.businessRepository.findUnique<BusinessWithDetailType>(queryBuilder);
         if (!databaseResult) throw new NotFoundException(FAILED_BUSINESS_NOT_FOUND);
         return databaseResult;
+    }
+
+    private async _checkExistenceEmployeeByUserIdWithActivationStatus(userId: number, isActive: boolean, shouldExists: 'yes' | 'no') {
+        const query = this.employeeQueryBuilder.findOneByUserIdWithActivationStatus(userId, isActive);
+        const employee = await this.employeeRepository.findFirst(query);
+
+        if (shouldExists === 'yes') {
+            if (!employee) throw new NotFoundException(FAILED_EMPLOYEE_NOT_FOUND);
+        } else {
+            if (employee) throw new ConflictException(FAILED_YOU_ARE_IN_A_BUSINESS_ALREADY);
+        }
+
+        return employee;
+    }
+
+    private async _createEmployeeAndPromoteToManager(userId: number, businessId: number) {
+        const employeeCode: string = randomInt(10000000, 99999999).toString();
+
+        const createEmployeeQuery = this.employeeQueryBuilder.create({ userId, businessId, employeeCode, role: 'manager' });
+        const employee = await this.employeeRepository.create(createEmployeeQuery);
+
+        const createManagerQuery = this.managerQueryBuilder.create(employee.id);
+        const manager = await this.managerRepository.create(createManagerQuery);
+
+        return {
+            employee,
+            manager,
+        };
     }
 }

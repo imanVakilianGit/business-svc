@@ -9,6 +9,9 @@ export class BusinessCategoryQueryBuilder {
             where: {
                 slug,
             },
+            include: {
+                options_template: true,
+            },
         };
     }
 
@@ -36,6 +39,9 @@ export class BusinessCategoryQueryBuilder {
         return {
             where: {
                 id,
+            },
+            include: {
+                options_template: true,
             },
         };
     }

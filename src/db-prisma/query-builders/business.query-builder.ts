@@ -154,4 +154,20 @@ export class BusinessQueryBuilder {
             select: this.allDetailsSelectionFields,
         };
     }
+
+    setManager(id: number, managerId: number): Prisma.businessUpdateArgs<DefaultArgs> {
+        return {
+            where: {
+                id,
+            },
+            data: {
+                manager: {
+                    connect: {
+                        id: managerId,
+                    },
+                },
+            },
+            select: this.allDetailsSelectionFields,
+        };
+    }
 }
