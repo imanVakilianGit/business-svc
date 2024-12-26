@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
-export class PromoteEmployeeToManager {
+export class PromoteEmployeeToManagerDto {
     @Min(1)
     @IsNumber()
     @IsNotEmpty()

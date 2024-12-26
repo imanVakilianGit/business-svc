@@ -13,7 +13,7 @@ import { FAILED_SECTION_NOT_FOUND } from '../section/response/error/failed-publi
 import { FAILED_BRANCH_NOT_FOUND } from '../branch/response/error/failed-public.result';
 import { ManagerRepository } from '../db-prisma/repositories/manager.repository';
 import { ManagerQueryBuilder } from '../db-prisma/query-builders/manager.query-builder';
-import { PromoteEmployeeToManager } from './common/dto/promote-to-manager.dto';
+import { PromoteEmployeeToManagerDto } from './common/dto/promote-to-manager.dto';
 import { SUCCESS_CREATE_EMPLOYEE } from './response/success/success-create.result';
 import { SectionRepository } from '../db-prisma/repositories/section.repository';
 import { SectionQueryBuilder } from '../db-prisma/query-builders/section.query-builder';
@@ -67,15 +67,17 @@ export class EmployeeService {
         }
     }
 
-    async promoteToManger(dto: PromoteEmployeeToManager) {
+    async promoteToManger(dto: PromoteEmployeeToManagerDto) {
         try {
             await this._checkExistenceEmployeeWithActivationStatus(dto.employeeId, true, 'yes');
             await this._checkExistenceManagerWithActivationStatus(dto.employeeId, true, 'no');
 
             const query = this.managerQueryBuilder.create(dto.employeeId);
             const manager = await this.managerRepository.create(query);
-            console.log(manager);
 
+            await this.employeeRepository.update(this.employeeQueryBuilder.changeRole(dto.employeeId, 'manager'));
+
+            manager.employee.role = 'manager';
             return SUCCESS_PROMOTE_EMPLOYEE_TO_MANAGER(manager);
         } catch (error) {
             console.log(error);

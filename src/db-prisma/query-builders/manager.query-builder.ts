@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
+// import { Prisma } from '@prisma/client';
+// import { DefaultArgs } from '@prisma/client/runtime/library';
 
 export class ManagerQueryBuilder {
-    create(employeeId: number) /*: Prisma.managerCreateArgs<DefaultArgs>*/ {
+    create(employeeId: number) /* :Prisma.managerCreateArgs<DefaultArgs> */ {
         return {
             data: {
                 employee: {

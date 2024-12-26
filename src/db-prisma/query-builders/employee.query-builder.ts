@@ -73,4 +73,15 @@ export class EmployeeQueryBuilder {
             },
         };
     }
+
+    changeRole(id: number, role: string) /* : Prisma.employeeUpdateArgs<DefaultArgs> */ {
+        return {
+            where: {
+                id,
+            },
+            data: {
+                role,
+            },
+        };
+    }
 }

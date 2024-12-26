@@ -15,4 +15,8 @@ export class EmployeeRepository {
     async findFirst<T extends Prisma.employeeFindFirstArgs<DefaultArgs>>(data: T) {
         return await this.prismaClient.employee.findFirst<T>(data as any);
     }
+
+    async update<T extends Prisma.employeeUpdateArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.employee.update<T>(data as any);
+    }
 }

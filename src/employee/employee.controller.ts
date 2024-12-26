@@ -3,7 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeDto } from './common/dto/create.dto';
-import { PromoteEmployeeToManager } from './common/dto/promote-to-manager.dto';
+import { PromoteEmployeeToManagerDto } from './common/dto/promote-to-manager.dto';
 
 @Controller()
 export class EmployeeController {
@@ -15,7 +15,7 @@ export class EmployeeController {
     }
 
     @MessagePattern('promote_employee_to_manager')
-    promoteToManager(@Payload() dto: PromoteEmployeeToManager) {
+    promoteToManager(@Payload() dto: PromoteEmployeeToManagerDto) {
         return this.employeeService.promoteToManger(dto);
     }
 }
