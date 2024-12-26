@@ -35,12 +35,12 @@ export class CreateBusinessDto {
     @Min(1)
     @IsNumber()
     @IsNotEmpty()
-    managerId: number;
+    businessCategoryId: number;
 
     @Min(1)
     @IsNumber()
     @IsNotEmpty()
-    businessCategoryId: number;
+    userId: number;
 
     @Matches(GENERAL_LETTER_REGEX)
     @Length(2, 25)

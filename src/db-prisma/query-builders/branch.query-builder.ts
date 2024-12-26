@@ -1,8 +1,16 @@
-import { Prisma } from '@prisma/client';
+// import { Prisma } from '@prisma/client';
 
 import { CreateBranchDto } from '../../branch/common/dto/create.dto';
 
 export class BranchQueryBuilder {
+    findOneById(id: number) /* : Prisma.userFindFirstArgs<DefaultArgs> */ {
+        return {
+            where: {
+                id: id,
+            },
+        };
+    }
+
     create(data: CreateBranchDto & { code: string }) {
         return {
             data: {
@@ -19,7 +27,7 @@ export class BranchQueryBuilder {
                         employee_id: data.managerEmployeeCode,
                     },
                 },
-            } as Prisma.branchCreateInput,
+            } /* as Prisma.branchCreateInput */,
             include: {
                 business: true,
                 manager: true,

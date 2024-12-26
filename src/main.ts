@@ -5,6 +5,7 @@ import { INestMicroservice, ValidationError, ValidationPipe } from '@nestjs/comm
 import { AppModule } from './app.module';
 import { APP_NAME } from './common/constant/service-name.constant';
 import { GlobalResponseInterceptor } from './common/interceptor/global-response.interceptor';
+import { inspect } from 'util';
 
 async function bootstrap(): Promise<void> {
     const port: number = Number(process.env.APP_PORT);
@@ -27,14 +28,17 @@ async function bootstrap(): Promise<void> {
             forbidUnknownValues: true,
             disableErrorMessages: true,
             exceptionFactory: (errors: ValidationError[]): RpcException => {
-                console.log(new Date().toLocaleString('fa'), ' ------ validation error: ', errors);
+                console.log(new Date().toLocaleString('fa'), ' ------ validation error: ', inspect(errors, false, null));
                 return new RpcException({
                     service: APP_NAME,
                     success: false,
                     statusCode: 400,
-                    message: errors[0]?.constraints
-                        ? Object.values(errors[0].constraints)[0]
-                        : Object.values(errors[0].children?.[0]?.constraints || {})[0],
+                    message:
+                        (errors[0]?.constraints
+                            ? Object.values(errors[0].constraints)[0]
+                            : Object.values(
+                                  errors[0].children?.[0]?.constraints || errors[0].children?.[0]?.children?.[0]?.constraints || {},
+                              )[0]) || 'internal error',
                     code: 'VALIDATION_ERROR',
                     field: errors[0]?.constraints ? errors[0].property : errors[0].children?.[0]?.property,
                 });

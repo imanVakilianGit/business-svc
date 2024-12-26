@@ -1,1 +1,1 @@
-export const APP_NAME = 'ADMIN_SVC';
+export const APP_NAME = 'BUSINESS_SVC';

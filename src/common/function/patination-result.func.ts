@@ -11,7 +11,7 @@ export function paginationResult<T, D extends string>(data: {
     orderBy?: string;
 }): PaginationResponseInterface & { [K in D]: T[] } {
     return <PaginationResponseInterface & { [K in D]: T[] }>{
-        totalPage: data.totalCount > 0 ? Math.floor(data.totalCount / data.limit) + 1 : 0,
+        totalPage: data.totalCount > 0 ? Math.ceil(data.totalCount / data.limit) : 0,
         totalCount: data.totalCount,
         limit: data.limit,
         page: data.page,

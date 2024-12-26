@@ -2,7 +2,7 @@ model business {
     id                   Int                      @id() @default(autoincrement())
     created_at           DateTime                 @default(now())
     updated_at           DateTime                 @default(now()) @updatedAt
-    manager_id           Int
+    manager_id           Int?
     name                 String                   @unique
     slug                 String                   @unique
     business_category_id Int
@@ -11,7 +11,7 @@ model business {
     options              business_options[]
     extra_options        business_extra_options[]
     employees            employee[]
-    manager              manager                  @relation(fields: [manager_id], references: [employee_id])
+    manager              manager?                 @relation(fields: [manager_id], references: [id])
     branches             branch[]
 
     @@schema("common")

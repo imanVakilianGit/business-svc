@@ -27,4 +27,8 @@ export class BusinessRepository {
     async update<T extends business>(data: Prisma.businessUpdateArgs<DefaultArgs>): Promise<T> {
         return <T>await this.prismaClient.business.update(data);
     }
+
+    async findFirst<T extends business>(data: Prisma.businessFindFirstArgs<DefaultArgs>): Promise<T> {
+        return <T>await this.prismaClient.business.findFirst(data);
+    }
 }

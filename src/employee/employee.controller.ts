@@ -1,14 +1,21 @@
 import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { EmployeeService } from './employee.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CreateEmployeeDto } from './common/dto/create.dto';
+import { PromoteEmployeeToManagerDto } from './common/dto/promote-to-manager.dto';
 
 @Controller()
 export class EmployeeController {
     constructor(private readonly employeeService: EmployeeService) {}
 
-    // @MessagePattern('add_employee')
-    // addEmployee(@Payload() dto: ) {
-    //     return this.employeeService.addEmployee(dto);
-    // }
+    @MessagePattern('create_employee')
+    create(@Payload() dto: CreateEmployeeDto) {
+        return this.employeeService.create(dto);
+    }
+
+    @MessagePattern('promote_employee_to_manager')
+    promoteToManager(@Payload() dto: PromoteEmployeeToManagerDto) {
+        return this.employeeService.promoteToManger(dto);
+    }
 }
