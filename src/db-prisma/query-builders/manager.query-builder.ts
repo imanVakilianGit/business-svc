@@ -25,4 +25,12 @@ export class ManagerQueryBuilder {
             },
         };
     }
+
+    findOneById(id: number) /*: Prisma.managerFindFirstArgs<DefaultArgs>*/ {
+        return {
+            where: {
+                id,
+            },
+        };
+    }
 }

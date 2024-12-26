@@ -11,6 +11,8 @@ import { EmployeeRepository } from '../db-prisma/repositories/employee.repositor
 import { FAILED_BUSINESS_NOT_FOUND } from '../business/responses/error/failed-public.result';
 import { FAILED_SECTION_NOT_FOUND } from '../section/response/error/failed-public.result';
 import { FAILED_BRANCH_NOT_FOUND } from '../branch/response/error/failed-public.result';
+import { FindOneManagerByEmployeeId } from './common/dto/find-one-manager-by-user-id.dto';
+import { FindOneEmployeeByUserId } from './common/dto/find-one-by-user-id.dto';
 import { ManagerRepository } from '../db-prisma/repositories/manager.repository';
 import { ManagerQueryBuilder } from '../db-prisma/query-builders/manager.query-builder';
 import { PromoteEmployeeToManagerDto } from './common/dto/promote-to-manager.dto';
@@ -18,6 +20,8 @@ import { SUCCESS_CREATE_EMPLOYEE } from './response/success/success-create.resul
 import { SectionRepository } from '../db-prisma/repositories/section.repository';
 import { SectionQueryBuilder } from '../db-prisma/query-builders/section.query-builder';
 import { SUCCESS_PROMOTE_EMPLOYEE_TO_MANAGER } from './response/success/success-promote-to-manager.result';
+import { SUCCESS_FIND_ONE_EMPLOYEE_BY_USER_ID } from './response/success/success-find-one-by-user-id.result';
+import { SUCCESS_FIND_ONE_MANAGER_BY_EMPLOYEE_ID } from './response/success/success-find-one-manager-by-employee-id.result';
 import { UserRepository } from '../db-prisma/repositories/user.repository';
 import { UserQueryBuilder } from '../db-prisma/query-builders/user.query-builder';
 import {
@@ -70,7 +74,7 @@ export class EmployeeService {
     async promoteToManger(dto: PromoteEmployeeToManagerDto) {
         try {
             await this._checkExistenceEmployeeWithActivationStatus(dto.employeeId, true, 'yes');
-            await this._checkExistenceManagerWithActivationStatus(dto.employeeId, true, 'no');
+            await this._checkExistenceManagerByEmployeeIdWithActivationStatus(dto.employeeId, true, 'no');
 
             const query = this.managerQueryBuilder.create(dto.employeeId);
             const manager = await this.managerRepository.create(query);
@@ -81,6 +85,26 @@ export class EmployeeService {
             return SUCCESS_PROMOTE_EMPLOYEE_TO_MANAGER(manager);
         } catch (error) {
             console.log(error);
+            throw error;
+        }
+    }
+
+    async findOneByUserId(dto: FindOneEmployeeByUserId) {
+        try {
+            const employee = await this._checkExistenceEmployeeByUserIdWithActivationStatus(dto.userId, true, 'yes');
+
+            return SUCCESS_FIND_ONE_EMPLOYEE_BY_USER_ID(employee);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findOneManagerByEmployeeId(dto: FindOneManagerByEmployeeId) {
+        try {
+            const manager = await this._checkExistenceManagerByEmployeeIdWithActivationStatus(dto.employeeId, true, 'yes');
+
+            return SUCCESS_FIND_ONE_MANAGER_BY_EMPLOYEE_ID(manager);
+        } catch (error) {
             throw error;
         }
     }
@@ -112,7 +136,11 @@ export class EmployeeService {
         return employee;
     }
 
-    private async _checkExistenceManagerWithActivationStatus(employeeId: number, isActive: boolean, shouldExists: 'yes' | 'no') {
+    private async _checkExistenceManagerByEmployeeIdWithActivationStatus(
+        employeeId: number,
+        isActive: boolean,
+        shouldExists: 'yes' | 'no',
+    ) {
         const query = this.managerQueryBuilder.findOneByManagerIdWithActivationStatus(employeeId, isActive);
         const employee = await this.managerRepository.findFirst(query);
 
