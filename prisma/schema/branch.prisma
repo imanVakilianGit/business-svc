@@ -10,6 +10,7 @@ model branch {
     is_active   Boolean    @default(true)
     address     address?
     employees   employee[]
+    sections    section[]
     manager     manager    @relation(fields: [manager_id], references: [id])
     business    business   @relation(fields: [business_id], references: [id])
 
@@ -20,14 +21,15 @@ model section {
     id          Int        @id() @default(autoincrement())
     created_at  DateTime   @default(now())
     updated_at  DateTime   @default(now()) @updatedAt
-    business_id Int
-    manager_id  Int
+    branch_id   Int
+    manager_id  Int?
     name        String
     description String
     code        String     @unique
     is_active   Boolean    @default(true)
     employees   employee[]
-    manager     manager    @relation(fields: [manager_id], references: [id])
+    manager     manager?   @relation(fields: [manager_id], references: [id])
+    branch      branch     @relation(fields: [branch_id], references: [id])
 
     @@schema("common")
 }

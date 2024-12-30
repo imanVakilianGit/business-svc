@@ -12,7 +12,7 @@ export class BranchRepository {
         return await this.prismaClient.branch.create<T>(data as any);
     }
 
-    async findFirst<T extends Prisma.userFindFirstArgs<DefaultArgs>>(data: T) {
-        return await this.prismaClient.user.findFirst<T>(data as any);
+    async findFirst<T extends Prisma.branchFindFirstArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.branch.findFirst<T>(data as any);
     }
 }

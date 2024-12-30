@@ -8,7 +8,11 @@ import { DbPrismaService } from '../db-prisma.service';
 export class SectionRepository {
     constructor(private readonly prismaClient: DbPrismaService) {}
 
-    async findFirst<T extends Prisma.userFindFirstArgs<DefaultArgs>>(data: T) {
-        return await this.prismaClient.user.findFirst<T>(data as any);
+    async create<T extends Prisma.sectionCreateArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.section.create<T>(data as any);
+    }
+
+    async findFirst<T extends Prisma.sectionFindFirstArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.section.findFirst<T>(data as any);
     }
 }
