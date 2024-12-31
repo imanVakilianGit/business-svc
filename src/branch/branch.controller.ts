@@ -3,6 +3,9 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './common/dto/create.dto';
+import { FindOneBranchByCodeDto } from './common/dto/find-one-by-code.dto';
+import { FindOneBranchDto } from './common/dto/find-one.dto';
+import { FindAllBranchesDto } from './common/dto/find-all.dto';
 // import { UpdateBranchDto } from './common/dto/update.dto';
 
 @Controller()
@@ -14,23 +17,18 @@ export class BranchController {
         return this.branchService.create(dto);
     }
 
-    // @MessagePattern('find_all_branch')
-    // findAll() {
-    //     return this.branchService.findAll();
-    // }
+    @MessagePattern('find_all_branches')
+    findAll(@Payload() dto: FindAllBranchesDto) {
+        return this.branchService.findAll(dto);
+    }
 
-    // @MessagePattern('find_one_branch')
-    // findOne(@Payload() id: number) {
-    //     return this.branchService.findOne(id);
-    // }
+    @MessagePattern('find_one_branch')
+    findOne(@Payload() dto: FindOneBranchDto) {
+        return this.branchService.findOne(dto);
+    }
 
-    // @MessagePattern('update_branch')
-    // update(@Payload() updateBranchDto: UpdateBranchDto) {
-    //     return this.branchService.update(updateBranchDto.id, updateBranchDto);
-    // }
-
-    // @MessagePattern('active_de_active_branch')
-    // remove(@Payload() id: number) {
-    //     return this.branchService.remove(id);
-    // }
+    @MessagePattern('find_one_branch_by_code')
+    findOneByCode(@Payload() dto: FindOneBranchByCodeDto) {
+        return this.branchService.findOneByCode(dto);
+    }
 }
