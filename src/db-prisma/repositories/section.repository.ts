@@ -15,4 +15,12 @@ export class SectionRepository {
     async findFirst<T extends Prisma.sectionFindFirstArgs<DefaultArgs>>(data: T) {
         return await this.prismaClient.section.findFirst<T>(data as any);
     }
+
+    async findAll<T extends Prisma.sectionFindManyArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.section.findMany<T>(data as any);
+    }
+
+    async count<T extends Prisma.sectionCountArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.section.count<T>(data as any);
+    }
 }

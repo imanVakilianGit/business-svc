@@ -5,9 +5,13 @@ import { BranchQueryBuilder } from '../db-prisma/query-builders/branch.query-bui
 import { BranchRepository } from '../db-prisma/repositories/branch.repository';
 import { CreateSectionDto } from './common/dto/create.dto';
 import { FAILED_BRANCH_NOT_FOUND } from '../branch/response/error/failed-public.result';
+import { FindAllSectionsDto } from './common/dto/find-all.dto';
+import { omitObject } from '../common/function/omit-object';
+import { paginationResult } from '../common/function/patination-result.func';
 import { SectionQueryBuilder } from '../db-prisma/query-builders/section.query-builder';
 import { SectionRepository } from '../db-prisma/repositories/section.repository';
 import { SUCCESS_CREATE_SECTION } from './response/success/success-create.result';
+import { SUCCESS_FIND_ALL_SECTIONS } from './response/success/success-find-all.result';
 
 @Injectable()
 export class SectionService {
@@ -28,6 +32,46 @@ export class SectionService {
             const section = await this.sectionRepository.create(query);
 
             return SUCCESS_CREATE_SECTION(section);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async findAll(dto: FindAllSectionsDto | (FindAllSectionsDto & { skip: number })) {
+        try {
+            dto = { ...dto, skip: (dto.page - 1) * dto.limit };
+
+            const totalCount: number | undefined = await this.sectionRepository.count(this.sectionQueryBuilder.count(dto.branchId));
+
+            if (!totalCount) {
+                return SUCCESS_FIND_ALL_SECTIONS(
+                    paginationResult({
+                        totalCount: 0,
+                        limit: dto.limit,
+                        page: dto.page,
+                        count: 0,
+                        resultFieldName: 'sections',
+                        ResultValue: [],
+                        sortBy: dto.sortBy,
+                        orderBy: dto.orderBy,
+                    }),
+                );
+            }
+
+            const sections = await this.sectionRepository.findAll(this.sectionQueryBuilder.findAll(omitObject(dto, 'page')));
+
+            return SUCCESS_FIND_ALL_SECTIONS(
+                paginationResult({
+                    totalCount,
+                    limit: dto.limit,
+                    page: dto.page,
+                    count: sections.length,
+                    resultFieldName: 'sections',
+                    ResultValue: sections,
+                    sortBy: dto.sortBy,
+                    orderBy: dto.orderBy,
+                }),
+            );
         } catch (error) {
             throw error;
         }
