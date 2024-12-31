@@ -8,6 +8,7 @@ import { FAILED_BRANCH_NOT_FOUND } from '../branch/response/error/failed-public.
 import { FindOneSectionDto } from './common/dto/find-one.dto';
 import { FAILED_SECTION_NOT_FOUND } from './response/error/failed-public.result';
 import { FindAllSectionsDto } from './common/dto/find-all.dto';
+import { FindOneSectionByCodeDto } from './common/dto/find-one-by-code.dto';
 import { omitObject } from '../common/function/omit-object';
 import { paginationResult } from '../common/function/patination-result.func';
 import { SectionQueryBuilder } from '../db-prisma/query-builders/section.query-builder';
@@ -15,6 +16,7 @@ import { SectionRepository } from '../db-prisma/repositories/section.repository'
 import { SUCCESS_CREATE_SECTION } from './response/success/success-create.result';
 import { SUCCESS_FIND_ALL_SECTIONS } from './response/success/success-find-all.result';
 import { SUCCESS_FIND_ONE_SECTION } from './response/success/success-find-one.result';
+import { SUCCESS_FIND_ONE_SECTION_BY_CODE } from './response/success/success-find-one-by-code.result';
 
 @Injectable()
 export class SectionService {
@@ -91,6 +93,22 @@ export class SectionService {
             throw error;
         }
     }
+
+    async findOneByCode(dto: FindOneSectionByCodeDto) {
+        try {
+            console.log(dto);
+
+            const query = this.sectionQueryBuilder.findOneByCode(dto.code);
+            const section = await this.sectionRepository.findFirst(query);
+
+            if (!section) throw new NotFoundException(FAILED_SECTION_NOT_FOUND);
+
+            return SUCCESS_FIND_ONE_SECTION_BY_CODE(section);
+        } catch (error) {
+            throw error;
+        }
+    }
+
     // ==============================================
 
     private async _findOneActiveBranchOrFailByManagerId(branchId: number, managerId: number) {
