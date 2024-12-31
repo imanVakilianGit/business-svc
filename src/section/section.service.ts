@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
 import { BranchQueryBuilder } from '../db-prisma/query-builders/branch.query-builder';
 import { BranchRepository } from '../db-prisma/repositories/branch.repository';
 import { CreateSectionDto } from './common/dto/create.dto';
 import { FAILED_BRANCH_NOT_FOUND } from '../branch/response/error/failed-public.result';
+import { FindOneSectionDto } from './common/dto/find-one.dto';
+import { FAILED_SECTION_NOT_FOUND } from './response/error/failed-public.result';
 import { FindAllSectionsDto } from './common/dto/find-all.dto';
 import { omitObject } from '../common/function/omit-object';
 import { paginationResult } from '../common/function/patination-result.func';
@@ -12,6 +14,7 @@ import { SectionQueryBuilder } from '../db-prisma/query-builders/section.query-b
 import { SectionRepository } from '../db-prisma/repositories/section.repository';
 import { SUCCESS_CREATE_SECTION } from './response/success/success-create.result';
 import { SUCCESS_FIND_ALL_SECTIONS } from './response/success/success-find-all.result';
+import { SUCCESS_FIND_ONE_SECTION } from './response/success/success-find-one.result';
 
 @Injectable()
 export class SectionService {
@@ -77,6 +80,17 @@ export class SectionService {
         }
     }
 
+    async findOne(dto: FindOneSectionDto) {
+        try {
+            console.log(dto);
+
+            const section = await this._findOneSectionWithActivationStatus(dto.id, true, 'yes');
+
+            return SUCCESS_FIND_ONE_SECTION(section);
+        } catch (error) {
+            throw error;
+        }
+    }
     // ==============================================
 
     private async _findOneActiveBranchOrFailByManagerId(branchId: number, managerId: number) {
@@ -86,5 +100,20 @@ export class SectionService {
         if (!branch) throw new NotFoundException(FAILED_BRANCH_NOT_FOUND);
 
         return branch;
+    }
+
+    private async _findOneSectionWithActivationStatus(id: number, isActive: boolean, shouldExists?: 'yes' | 'no') {
+        const query = this.sectionQueryBuilder.findOneByIdWithActivationStatus(id, isActive);
+        const section = await this.sectionRepository.findFirst(query);
+
+        if (shouldExists) {
+            if (shouldExists === 'yes') {
+                if (!section) throw new NotFoundException(FAILED_SECTION_NOT_FOUND);
+            } else if (shouldExists === 'no') {
+                if (section) throw new ConflictException(FAILED_SECTION_NOT_FOUND);
+            }
+        }
+
+        return section;
     }
 }

@@ -13,6 +13,15 @@ export class SectionQueryBuilder {
         };
     }
 
+    findOneByIdWithActivationStatus(id: number, isActive: boolean) /* : Prisma.userFindFirstArgs<DefaultArgs> */ {
+        return {
+            where: {
+                id: id,
+                is_active: isActive,
+            },
+        };
+    }
+
     create(data: CreateSectionDto & { code: string }) {
         return {
             data: {
