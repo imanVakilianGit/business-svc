@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
+import { ActivationToggleSectionDto } from './common/dto/active-toggle.dto';
 import { CreateSectionDto } from './common/dto/create.dto';
 import { FindAllSectionsDto } from './common/dto/find-all.dto';
 import { FindOneSectionDto } from './common/dto/find-one.dto';
@@ -35,5 +36,10 @@ export class SectionController {
     @MessagePattern('update_section')
     update(@Payload() dto: UpdateSectionDto) {
         return this.sectionService.update(dto);
+    }
+
+    @MessagePattern('activation_toggle_section')
+    activationToggle(@Payload() dto: ActivationToggleSectionDto) {
+        return this.sectionService.activationToggle(dto);
     }
 }

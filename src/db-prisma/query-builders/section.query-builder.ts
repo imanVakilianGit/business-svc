@@ -2,6 +2,7 @@
 // import { DefaultArgs } from '@prisma/client/runtime/library';
 import { UUID } from 'crypto';
 
+import { ActivationToggleSectionDto } from '../../section/common/dto/active-toggle.dto';
 import { CreateSectionDto } from '../../section/common/dto/create.dto';
 import { FindAllSectionsDto } from '../../section/common/dto/find-all.dto';
 import { UpdateSectionDto } from '../../section/common/dto/update.dto';
@@ -73,6 +74,17 @@ export class SectionQueryBuilder {
                 branch: true,
                 manager: true,
             },
+        };
+    }
+
+    activationToggle(data: ActivationToggleSectionDto) /* : Prisma.sectionUpdateArgs */ {
+        return {
+            where: {
+                id: data.id,
+            },
+            data: {
+                is_active: data.isActive,
+            } /*as Prisma.sectionUpdateInput*/,
         };
     }
 

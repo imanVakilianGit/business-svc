@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
+import { ActivationToggleSectionDto } from './common/dto/active-toggle.dto';
 import { BranchQueryBuilder } from '../db-prisma/query-builders/branch.query-builder';
 import { BranchRepository } from '../db-prisma/repositories/branch.repository';
 import { CreateSectionDto } from './common/dto/create.dto';
@@ -18,6 +19,7 @@ import { SUCCESS_FIND_ALL_SECTIONS } from './response/success/success-find-all.r
 import { SUCCESS_FIND_ONE_SECTION } from './response/success/success-find-one.result';
 import { SUCCESS_FIND_ONE_SECTION_BY_CODE } from './response/success/success-find-one-by-code.result';
 import { SUCCESS_UPDATE_SECTION } from './response/success/success-update.result';
+import { SUCCESS_ACTIVATION_TOGGLE_SECTION } from './response/success/success-activation-toggle.result';
 import { UpdateSectionDto } from './common/dto/update.dto';
 
 @Injectable()
@@ -123,6 +125,19 @@ export class SectionService {
             throw error;
         }
     }
+
+    async activationToggle(dto: ActivationToggleSectionDto) {
+        try {
+            await this._findOneSectionById(dto.id);
+
+            const query = this.sectionQueryBuilder.activationToggle(dto);
+            const updatedSection = await this.sectionRepository.update(query);
+
+            return SUCCESS_ACTIVATION_TOGGLE_SECTION(updatedSection);
+        } catch (error) {
+            throw error;
+        }
+    }
     // ==============================================
 
     private async _findOneActiveBranchOrFailByManagerId(branchId: number, managerId: number) {
@@ -145,6 +160,15 @@ export class SectionService {
                 if (section) throw new ConflictException(FAILED_SECTION_NOT_FOUND);
             }
         }
+
+        return section;
+    }
+
+    private async _findOneSectionById(id: number) {
+        const query = this.sectionQueryBuilder.findOneById(id);
+        const section = await this.sectionRepository.findFirst(query);
+
+        if (!section) throw new NotFoundException(FAILED_SECTION_NOT_FOUND);
 
         return section;
     }
