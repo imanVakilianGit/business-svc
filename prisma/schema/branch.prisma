@@ -21,6 +21,7 @@ model section {
     id          Int        @id() @default(autoincrement())
     created_at  DateTime   @default(now())
     updated_at  DateTime   @default(now()) @updatedAt
+    business_id Int
     branch_id   Int
     manager_id  Int?
     name        String
@@ -30,6 +31,7 @@ model section {
     employees   employee[]
     manager     manager?   @relation(fields: [manager_id], references: [id])
     branch      branch     @relation(fields: [branch_id], references: [id])
+    business    business   @relation(fields: [business_id], references: [id])
 
     @@schema("common")
 }

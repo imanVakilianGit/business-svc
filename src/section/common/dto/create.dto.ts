@@ -11,6 +11,11 @@ export class CreateSectionDto {
     @IsNotEmpty()
     managerId: number;
 
+    @Min(1)
+    @IsNumber()
+    @IsNotEmpty()
+    businessId: number;
+
     @Length(3, 30)
     @IsString()
     @IsNotEmpty()

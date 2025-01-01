@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 import { OrderByEnum } from '../../../common/enum/order-by.enum';
 import { PaginationDto } from '../../../common/dto/pagination.dto';
@@ -19,4 +19,9 @@ export class FindAllSectionsDto extends PaginationDto {
     @IsNumber()
     @IsOptional()
     branchId?: number;
+
+    @Min(1)
+    @IsNumber()
+    @IsNotEmpty()
+    managerId: number;
 }

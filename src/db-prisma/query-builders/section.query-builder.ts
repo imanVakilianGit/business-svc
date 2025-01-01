@@ -1,5 +1,5 @@
-// import { Prisma } from '@prisma/client';
-// import { DefaultArgs } from '@prisma/client/runtime/library';
+import { Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 import { UUID } from 'crypto';
 
 import { ActivationToggleSectionDto } from '../../section/common/dto/active-toggle.dto';
@@ -53,7 +53,12 @@ export class SectionQueryBuilder {
                         id: data.branchId,
                     },
                 },
-            } /* as Prisma.sectionCreateInput */,
+                business: {
+                    connect: {
+                        id: data.businessId,
+                    },
+                },
+            } as Prisma.sectionCreateInput,
             include: {
                 branch: true,
                 manager: true,
@@ -61,10 +66,25 @@ export class SectionQueryBuilder {
         };
     }
 
-    update(data: UpdateSectionDto) /* : Prisma.sectionUpdateArgs */ {
+    update(data: UpdateSectionDto): Prisma.sectionUpdateArgs {
         return {
             where: {
                 id: data.id,
+                OR: [
+                    {
+                        manager_id: data.managerId,
+                    },
+                    {
+                        branch: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                    {
+                        business: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                ],
             },
             data: {
                 ...(data.name ? { name: data.name } : {}),
@@ -77,10 +97,13 @@ export class SectionQueryBuilder {
         };
     }
 
-    activationToggle(data: ActivationToggleSectionDto) /* : Prisma.sectionUpdateArgs */ {
+    activationToggle(data: ActivationToggleSectionDto): Prisma.sectionUpdateArgs {
         return {
             where: {
                 id: data.id,
+                business: {
+                    manager_id: data.managerId,
+                },
             },
             data: {
                 is_active: data.isActive,
@@ -88,10 +111,22 @@ export class SectionQueryBuilder {
         };
     }
 
-    count(branchId?: number) /* : Prisma.sectionCountArgs<DefaultArgs> */ {
+    count(data: { branchId?: number; managerId: number }): Prisma.sectionCountArgs<DefaultArgs> {
         return {
             where: {
-                ...(branchId ? { branch_id: branchId } : {}),
+                OR: [
+                    {
+                        branch: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                    {
+                        business: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                ],
+                ...(data.branchId ? { branch_id: data.branchId } : {}),
             },
         };
     }
@@ -99,6 +134,18 @@ export class SectionQueryBuilder {
     findAll(data: Omit<FindAllSectionsDto, 'page'> & { skip: number }) /*: Prisma.sectionFindManyArgs<DefaultArgs>*/ {
         return {
             where: {
+                OR: [
+                    {
+                        branch: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                    {
+                        business: {
+                            manager_id: data.managerId,
+                        },
+                    },
+                ],
                 ...(data.branchId ? { branch_id: data.branchId } : {}),
             },
             take: data.limit,

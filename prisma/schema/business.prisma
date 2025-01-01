@@ -13,6 +13,7 @@ model business {
     employees            employee[]
     manager              manager?                 @relation(fields: [manager_id], references: [id])
     branches             branch[]
+    sections             section[]
 
     @@schema("common")
 }

@@ -34,7 +34,6 @@ export class SectionService {
     async create(dto: CreateSectionDto) {
         try {
             await this._findOneActiveBranchOrFailByManagerId(dto.branchId, dto.managerId);
-            console.log(dto);
             const code = randomUUID();
 
             const query = this.sectionQueryBuilder.create({ ...dto, code });
@@ -50,7 +49,9 @@ export class SectionService {
         try {
             dto = { ...dto, skip: (dto.page - 1) * dto.limit };
 
-            const totalCount: number | undefined = await this.sectionRepository.count(this.sectionQueryBuilder.count(dto.branchId));
+            const totalCount: number | undefined = await this.sectionRepository.count(
+                this.sectionQueryBuilder.count({ managerId: dto.managerId, branchId: dto.branchId }),
+            );
 
             if (!totalCount) {
                 return SUCCESS_FIND_ALL_SECTIONS(
@@ -88,8 +89,6 @@ export class SectionService {
 
     async findOne(dto: FindOneSectionDto) {
         try {
-            console.log(dto);
-
             const section = await this._findOneSectionWithActivationStatus(dto.id, true, 'yes');
 
             return SUCCESS_FIND_ONE_SECTION(section);

@@ -1,4 +1,4 @@
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator';
 import { IdDto } from '../../../common/dto/id.dto';
 
 export class UpdateSectionDto extends IdDto {
@@ -11,4 +11,9 @@ export class UpdateSectionDto extends IdDto {
     @IsString()
     @IsOptional()
     description?: string;
+
+    @Min(1)
+    @IsNumber()
+    @IsNotEmpty()
+    managerId: number;
 }
