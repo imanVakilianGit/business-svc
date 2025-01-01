@@ -6,6 +6,7 @@ import { FindAllSectionsDto } from './common/dto/find-all.dto';
 import { FindOneSectionDto } from './common/dto/find-one.dto';
 import { FindOneSectionByCodeDto } from './common/dto/find-one-by-code.dto';
 import { SectionService } from './section.service';
+import { UpdateSectionDto } from './common/dto/update.dto';
 
 @Controller()
 export class SectionController {
@@ -29,5 +30,10 @@ export class SectionController {
     @MessagePattern('find_one_section_by_code')
     findOneByCode(@Payload() dto: FindOneSectionByCodeDto) {
         return this.sectionService.findOneByCode(dto);
+    }
+
+    @MessagePattern('update_section')
+    update(@Payload() dto: UpdateSectionDto) {
+        return this.sectionService.update(dto);
     }
 }

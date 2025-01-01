@@ -4,6 +4,7 @@ import { UUID } from 'crypto';
 
 import { CreateSectionDto } from '../../section/common/dto/create.dto';
 import { FindAllSectionsDto } from '../../section/common/dto/find-all.dto';
+import { UpdateSectionDto } from '../../section/common/dto/update.dto';
 
 export class SectionQueryBuilder {
     findOneById(id: number) /* : Prisma.sectionFindFirstArgs<DefaultArgs> */ {
@@ -53,7 +54,23 @@ export class SectionQueryBuilder {
                 },
             } /* as Prisma.sectionCreateInput */,
             include: {
-                business: true,
+                branch: true,
+                manager: true,
+            },
+        };
+    }
+
+    update(data: UpdateSectionDto) /* : Prisma.sectionUpdateArgs */ {
+        return {
+            where: {
+                id: data.id,
+            },
+            data: {
+                ...(data.name ? { name: data.name } : {}),
+                ...(data.description ? { description: data.description } : {}),
+            } /*as Prisma.sectionUpdateInput*/,
+            include: {
+                branch: true,
                 manager: true,
             },
         };

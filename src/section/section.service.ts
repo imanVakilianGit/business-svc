@@ -17,6 +17,8 @@ import { SUCCESS_CREATE_SECTION } from './response/success/success-create.result
 import { SUCCESS_FIND_ALL_SECTIONS } from './response/success/success-find-all.result';
 import { SUCCESS_FIND_ONE_SECTION } from './response/success/success-find-one.result';
 import { SUCCESS_FIND_ONE_SECTION_BY_CODE } from './response/success/success-find-one-by-code.result';
+import { SUCCESS_UPDATE_SECTION } from './response/success/success-update.result';
+import { UpdateSectionDto } from './common/dto/update.dto';
 
 @Injectable()
 export class SectionService {
@@ -109,6 +111,18 @@ export class SectionService {
         }
     }
 
+    async update(dto: UpdateSectionDto) {
+        try {
+            await this._findOneSectionWithActivationStatus(dto.id, true, 'yes');
+
+            const query = this.sectionQueryBuilder.update(dto);
+            const updatedSection = await this.sectionRepository.update(query);
+
+            return SUCCESS_UPDATE_SECTION(updatedSection);
+        } catch (error) {
+            throw error;
+        }
+    }
     // ==============================================
 
     private async _findOneActiveBranchOrFailByManagerId(branchId: number, managerId: number) {

@@ -23,4 +23,8 @@ export class SectionRepository {
     async count<T extends Prisma.sectionCountArgs<DefaultArgs>>(data: T) {
         return await this.prismaClient.section.count<T>(data as any);
     }
+
+    async update<T extends Prisma.sectionUpdateArgs<DefaultArgs>>(data: T) {
+        return await this.prismaClient.section.update<T>(data as any);
+    }
 }
